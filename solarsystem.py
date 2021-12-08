@@ -73,6 +73,7 @@ class SolarSystem:
         self.bodies.append(body)
         
     def remove_body(self,body):
+        body.clear()
         self.bodies.remove(body)
 
     def update_all(self):
@@ -98,3 +99,18 @@ class SolarSystem:
                 body.velocity[1] + (reverse * acc_y),
             )
             reverse = -1
+    
+    def check_collision(self, first, second):
+        if isinstance(first, Planet) and isinstance(second, Planet):
+            return
+        if first.distance(second) < first.display_size/2 + second.display_size/2:
+            for body in first, second:
+                if isinstance(body,Planet):
+                    self.remove_body(body)
+                    
+    def calculate_all_body_interactions(self):
+        bodies_copy = self.bodies.copy()
+        for idx, first in enumerate(bodies_copy):
+            for second in bodies_copy[idx + 1:]:
+                self.accelerate_due_to_gravity(first, second)
+                self.check_collision(first, second)
